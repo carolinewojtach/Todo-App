@@ -1,8 +1,63 @@
-const { showTasks, addTask, deleteTask } = require("./functions");
+const {
+  showTasks,
+  addTask,
+  deleteTask,
+  uploadTasks,
+  downloadTasks,
+  filterTasks,
+  changeStatus
+} = require("./functions");
+
+//{"active":[{"text":"hh"}],"completed":[{"text":"aavy"}]}
+
+const addCommand = {
+  command: "add-task",
+  describe:
+    "Add a new task to list - provide text and optionally category and status",
+  builder: {
+    text: {
+      demandOption: true
+    }
+  },
+  handler: async ({ text, category, status }) => {
+    const task = {
+      text,
+      status,
+      category
+    };
+
+    try {
+      let result = await addTask(task);
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
+
+const changeStatusCommand = {
+  command: "change-status",
+  describe: "Change status of the task - provide id and status",
+  builder: {
+    status: {
+      demandOption: true
+    },
+    id: {
+      demandOption: true
+    }
+  },
+  handler: async ({ id, status }) => {
+    try {
+      await changeStatus(id, status);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
 
 const deleteCommand = {
   command: "delete-task",
-  describe: "Delete task from list",
+  describe: "Delete task from list - provide id",
   builder: {
     id: {
       demandOption: true
@@ -10,32 +65,39 @@ const deleteCommand = {
   },
   handler: async ({ id }) => {
     try {
-      await deleteTask(id);
-      console.log("You deleted the task.");
+      let result = await deleteTask(id);
+      console.log(result);
     } catch (error) {
       console.log(error.message);
     }
   }
 };
 
-const addCommand = {
-  command: "add-task",
-  describe: "Add a new task to list",
+const downloadCommand = {
+  command: "download",
+  describe: "Download tasks",
+  builder: {},
+  handler: async () => {
+    try {
+      let result = await downloadTasks();
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
+
+const filterCommand = {
+  command: "filter",
+  describe: "Filter tasks - provide status",
   builder: {
-    text: {
+    status: {
       demandOption: true
     }
   },
-  handler: async ({ text, id, status, category }) => {
-    const task = {
-      text,
-      id,
-      category
-    };
-
+  handler: async ({ status }) => {
     try {
-      await addTask(task, status);
-      console.log("You added the task.");
+      await filterTasks(status);
     } catch (error) {
       console.log(error.message);
     }
@@ -62,22 +124,7 @@ const uploadCommand = {
   builder: {},
   handler: async () => {
     try {
-      await uploadTasks();
-      console.log("You uploaded your tasks");
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-};
-
-const downloadCommand = {
-  command: "download",
-  describe: "Download tasks",
-  builder: {},
-  handler: async () => {
-    try {
-      let result = await downloadTasks();
-      console.log("You downloaded your tasks");
+      let result = await uploadTasks();
       console.log(result);
     } catch (error) {
       console.log(error.message);
@@ -90,5 +137,7 @@ module.exports = {
   addCommand,
   deleteCommand,
   uploadCommand,
-  downloadCommand
+  downloadCommand,
+  filterCommand,
+  changeStatusCommand
 };

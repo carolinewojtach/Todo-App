@@ -1,69 +1,82 @@
 const axios = require("axios");
 const fs = require("fs");
 
-function showTasks() {
-  let tasks = JSON.parse(fs.readFileSync("tasklist.json", "utf8"));
-  if (tasks.active.length !== 0) {
-    let valuesActive = [];
-    let valuesCompleted = [];
-    for (let i = 0; i < tasks.active.length; i++) {
-      valuesActive.push(Object.values(tasks.active[i]));
-    }
-    return "Active tasks: " + valuesActive;
-  }
-  if (tasks.completed.length !== 0) {
-    valuesCompleted = Object.values(tasks.completed[0]);
-    return "Completed tasks: " + valuesCompleted;
-  }
-  //else {
-  //   return "You don't have any tasks";
-  // }
-}
-
-function addTask(task, status) {
-  // let taskList = { active: [], completed: [] };
-  // let tasks = JSON.parse(fs.readFileSync("tasklist.json", "utf8"));
-  // console.log(tasks);
-  // if (tasks !== undefined) {
-  //   tasks.active.forEach(e => {
-  //     taskList.active.push(e);
-  //   });
-  //   tasks.completed.forEach(e => {
-  //     taskList.completed.push(e);
-  //   });
-  // }
+function addTask(task) {
   let taskList = JSON.parse(fs.readFileSync("tasklist.json", "utf8"));
 
-  //ADD TASKS TO STATUS GROUPS
-  if (status === "active" || !status) {
-    taskList.active.push(task);
-  } else if (status === "completed") {
-    taskList.completed.push(task);
+  //DRAW ID
+  let isDrawed = false;
+  while (!isDrawed) {
+    let index = Math.floor(Math.random() * 200);
+    let matchId = taskList.find(e => e.id === index);
+    console.log("index" + index);
+    if (matchId === undefined) {
+      task.id = index;
+      isDrawed = true;
+    }
   }
 
+  // ADD DEFAULT VALUES TO TASK
+  if (!task.status) {
+    task.status = "active";
+  } else if (status !== "active" || status !== "complete") {
+    return "Wrong status name";
+  }
+
+  if (!task.category) task.category = "none";
+  taskList.push(task);
+
   fs.writeFileSync("tasklist.json", JSON.stringify(taskList));
+  return "You added the task.";
 }
 
-function deleteTask(id) {}
+function changeStatus(id, status) {}
 
-async function uploadTasks(task) {
-  const response = await axios.post(
-    "http://api.quuu.linuxpl.eu/todo/mdvghaco",
-    task
-  );
-  return response.data;
+function deleteTask(id) {
+  let taskList = JSON.parse(fs.readFileSync("tasklist.json", "utf8"));
+
+  let taskFound = taskList.find(e => e.id === id);
+  if (taskFound !== undefined) {
+    let index = taskList.indexOf(taskFound);
+    taskList.splice(index, 1);
+    fs.writeFileSync("tasklist.json", JSON.stringify(taskList));
+    return "You deleted the task.";
+  } else {
+    return "There is no task with such id.";
+  }
 }
 
 async function downloadTasks() {
   const response = await axios.get(`http://api.quuu.linuxpl.eu/todo/mdvghaco`);
+  fs.writeFileSync("tasklist.json", JSON.stringify(response));
+
+  return "You downloaded your tasks.";
+}
+
+function filterTasks(status) {}
+
+function showTasks() {
   let taskList = JSON.parse(fs.readFileSync("tasklist.json", "utf8"));
 
-  return response.data;
+  if (taskList.length !== 0) {
+    return taskList;
+  } else {
+    return "You don't have any tasks";
+  }
 }
+
+async function uploadTasks() {
+  let taskList = JSON.parse(fs.readFileSync("tasklist.json", "utf8"));
+  await axios.post("http://api.quuu.linuxpl.eu/todo/mdvghaco", taskList);
+  return "You uploaded your tasks.";
+}
+
 module.exports = {
   showTasks,
   addTask,
   deleteTask,
   uploadTasks,
-  downloadTasks
+  downloadTasks,
+  filterTasks,
+  changeStatus
 };
