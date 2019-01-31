@@ -6,7 +6,8 @@ const {
   deleteCommand,
   uploadCommand,
   downloadCommand,
-  filterCommand,
+  filterCategoryCommand,
+  filterStatusCommand,
   changeStatusCommand
 } = require("./commands");
 
@@ -16,5 +17,6 @@ yargs
   .command(deleteCommand)
   .command(uploadCommand)
   .command(downloadCommand)
-  .command(filterCommand)
+  .command(filterCategoryCommand)
+  .command(filterStatusCommand)
   .command(changeStatusCommand).argv;

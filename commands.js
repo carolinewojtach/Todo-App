@@ -4,11 +4,10 @@ const {
   deleteTask,
   uploadTasks,
   downloadTasks,
-  filterTasks,
+  filterStatusTasks,
+  filterCategoryTasks,
   changeStatus
 } = require("./functions");
-
-//{"active":[{"text":"hh"}],"completed":[{"text":"aavy"}]}
 
 const addCommand = {
   command: "add-task",
@@ -48,7 +47,8 @@ const changeStatusCommand = {
   },
   handler: async ({ id, status }) => {
     try {
-      await changeStatus(id, status);
+      let result = await changeStatus(id, status);
+      console.log(result);
     } catch (error) {
       console.log(error.message);
     }
@@ -87,9 +87,27 @@ const downloadCommand = {
   }
 };
 
-const filterCommand = {
-  command: "filter",
-  describe: "Filter tasks - provide status",
+const filterCategoryCommand = {
+  command: "filter-category",
+  describe: "Filter tasks by category - provide category",
+  builder: {
+    category: {
+      demandOption: true
+    }
+  },
+  handler: async ({ category }) => {
+    try {
+      let result = await filterCategoryTasks(category);
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
+
+const filterStatusCommand = {
+  command: "filter-status",
+  describe: "Filter tasks by status - provide status",
   builder: {
     status: {
       demandOption: true
@@ -97,7 +115,8 @@ const filterCommand = {
   },
   handler: async ({ status }) => {
     try {
-      await filterTasks(status);
+      let result = await filterStatusTasks(status);
+      console.log(result);
     } catch (error) {
       console.log(error.message);
     }
@@ -138,6 +157,7 @@ module.exports = {
   deleteCommand,
   uploadCommand,
   downloadCommand,
-  filterCommand,
+  filterCategoryCommand,
+  filterStatusCommand,
   changeStatusCommand
 };
