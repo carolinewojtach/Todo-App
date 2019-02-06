@@ -9,8 +9,21 @@ const {
   changeStatus
 } = require("./functions");
 
+const showCommand = {
+  command: "show",
+  describe: "Show task list",
+  handler: async () => {
+    try {
+      let result = await showTasks();
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
+
 const addCommand = {
-  command: "add-task",
+  command: "add",
   describe:
     "Add a new task to list - provide text and optionally category and status",
   builder: {
@@ -34,29 +47,8 @@ const addCommand = {
   }
 };
 
-const changeStatusCommand = {
-  command: "change-status",
-  describe: "Change status of the task - provide id and status",
-  builder: {
-    status: {
-      demandOption: true
-    },
-    id: {
-      demandOption: true
-    }
-  },
-  handler: async ({ id, status }) => {
-    try {
-      let result = await changeStatus(id, status);
-      console.log(result);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-};
-
 const deleteCommand = {
-  command: "delete-task",
+  command: "delete",
   describe: "Delete task from list - provide id",
   builder: {
     id: {
@@ -73,10 +65,22 @@ const deleteCommand = {
   }
 };
 
+const uploadCommand = {
+  command: "upload",
+  describe: "Upload tasks",
+  handler: async () => {
+    try {
+      let result = await uploadTasks();
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
+
 const downloadCommand = {
   command: "download",
   describe: "Download tasks",
-  builder: {},
   handler: async () => {
     try {
       let result = await downloadTasks();
@@ -123,27 +127,20 @@ const filterStatusCommand = {
   }
 };
 
-const showCommand = {
-  command: "show-tasks",
-  describe: "Show task list",
-  builder: {},
-  handler: async () => {
-    try {
-      let result = await showTasks();
-      console.log(result);
-    } catch (error) {
-      console.log(error.message);
+const changeStatusCommand = {
+  command: "change-status",
+  describe: "Change status of the task - provide id and status",
+  builder: {
+    status: {
+      demandOption: true
+    },
+    id: {
+      demandOption: true
     }
-  }
-};
-
-const uploadCommand = {
-  command: "upload",
-  describe: "Upload tasks",
-  builder: {},
-  handler: async () => {
+  },
+  handler: async ({ id, status }) => {
     try {
-      let result = await uploadTasks();
+      let result = await changeStatus(id, status);
       console.log(result);
     } catch (error) {
       console.log(error.message);
